@@ -12,6 +12,9 @@ use Livewire\WithPagination;
 class Users extends Component
 {
     use WithFileUploads, WithPagination;
+
+    public $query = '';
+
     // Public property
     // Pakai anotation
     #[Validate('required|min:3')]
@@ -23,6 +26,16 @@ class Users extends Component
 
     #[Validate('image|max:5024')] // 5MB Max
     public $avatar;
+
+    public function updatedQuery()
+    {
+        $this->resetPage();
+    }
+
+    public function search()
+    {
+        $this->resetPage();
+    }
 
     public function createUser()
     {
@@ -47,7 +60,9 @@ class Users extends Component
     {
         return view('livewire.users', [
             'title' => 'Users Page',
-            'users' => User::latest()->paginate(5),
+            'users' => User::latest()
+                ->where('name', 'like', "%{$this->query}%")
+                ->paginate(5),
         ]);
     }
 }
